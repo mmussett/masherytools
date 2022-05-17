@@ -1,0 +1,21 @@
+<h1>{{title}}</h1>
+<div class="container-fluid">
+
+<!-- <div container="fluid-tools" id="tools"> -->
+    {{#if tools}}
+        <table class="table">
+            {{#each tools}}
+                <tr>
+                    <td>
+                        <p><a href="{{link}}">{{name}}</a></p>
+                    </td>
+                    <td>
+                        <p>{{description}}</p>
+                    </td>
+                </tr>
+            {{/each}}
+        </table>
+    {{else}}
+        <div id="warn" class="message">No tools defined. Check config.js.</div>
+    {{/if}}
+</div>

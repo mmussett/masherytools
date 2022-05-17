@@ -1,0 +1,440 @@
+<h1>{{title}}</h1>
+<p>{{description}}</p>
+<hr style="width: 100%; margin-top: 1em; margin-bottom: 1em;"/>
+<div id="container-fluid" style="overflow:hidden;">
+    <!--    <div class="form-group" id="source" style="width: 49%; height: 100%; float: left;">-->
+
+    <div class="row">
+        <div class="col">
+            <div class="form-group" id="source">
+                <h2 class="text-capitalize fs-2 text-success">Source Area</h2>
+                <form id="listSrc" class="form" action="copyapi" method="POST"
+                      enctype="application/x-www-form-urlencoded">
+
+                    <input type="hidden" id="src_offset" name="src_offset" value="{{srcOffset}}">
+                    <input type="hidden" id="src_limit" name="src_limit" value="{{srcLimit}}"/>
+
+                    <div class="container overflow-visible">
+                        <div class="row mt-3">
+                            {{#if srcUuids}}
+                                <div class="col">
+                                    <label class="form-label fw-normal" for="src_uuid">Area Name</label>
+                                </div>
+                                <div class="col">
+                                    <select class="form-select" id="src_uuid" name="src_uuid">
+                                        {{#each srcUuids}}
+                                            {{#if (eq ../srcUuid uuid)}}
+                                                <option value="{{uuid}}" selected="selected">{{name}}</option>
+                                            {{else}}
+                                                <option value="{{uuid}}">{{name}}</option>
+                                            {{/if}}
+                                        {{/each}}
+                                    </select>
+                                </div>
+                            {{else}}
+                                <div class="col">
+                                    <label class="form-label fw-normal" for="src_uuid">Area UUID</label>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control" name="src_uuid" id="src_uuid"
+                                           value="{{srcUuid}}">
+                                </div>
+                            {{/if}}
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label class="form-label fw-normal" for="src_user">Mashery User</label>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" name="src_user" id="src_user"
+                                       value="{{srcUser}}">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label class="form-label fw-normal " for="src_pwd">Password</label>
+                            </div>
+                            <div class="col">
+                                <input type="password" class="form-control" name="src_pwd" id="src_pwd"
+                                       value="{{srcPwd}}">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label class="form-label fw-normal" for="src_key">Platform API Key</label>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" name="src_key" id="src_key" value="{{srcKey}}">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label class="form-label fw-normal" for="src_secret">API Key Secret</label>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" name="src_secret" id="src_secret"
+                                       value="{{srcSecret}}">
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <input type="submit"
+                                   name="load_src_services"
+                                   id="load_src_services"
+                                   value="Load Services"
+                                   class="btn btn-primary float-end"/>
+
+                        </div>
+                    </div>
+                </form>
+
+                {{#if srcServices}}
+                    <div id="srcServices" style="margin-top: 4em;">
+                        <p style="margin-bottom: 1em;">Showing {{srcRange}} of {{totalCount}}
+                            {{#if (gt srcRemain 0)}}
+                                {{#if (gt srcOffset 0)}}
+                                    &nbsp;|&nbsp;<a id="src-list-prev" href="#">prev
+                                    {{#if (lte srcLimit srcOffset)}}
+                                        {{srcLimit}}
+                                    {{else}}
+                                        {{srcOffset}}
+                                    {{/if}}</a>
+                                {{/if}}
+                                {{#if (lt srcServices.length totalCount)}}
+                                    &nbsp;|&nbsp;<a id="src-list-next" href="#">next
+                                    {{#if (lte srcRemain srcServices.length)}}
+                                        {{srcRemain}}
+                                    {{else}}
+                                        {{srcServices.length}}
+                                    {{/if}}</a>
+                                    <span style="margin-left: 1em; float: right;">&nbsp;&nbsp;Records per page:&nbsp;
+                                <input type="number" id="limit_placeholder" name="limit_placeholder"
+                                       value="{{srcLimit}}" style="width: 50px;"/>
+                            </span>
+                                {{/if}}
+                            {{else}}
+                                {{#if (gt srcOffset 0)}}
+                                    &nbsp;|&nbsp;<a id="src-list-prev" href="#">prev
+                                    {{#if (lte srcLimit srcOffset)}}
+                                        {{srcLimit}}
+                                    {{else}}
+                                        {{srcOffset}}
+                                    {{/if}}</a>
+                                    <span style="margin-left: 1em; float: right;">&nbsp;&nbsp;Records per page:&nbsp;
+                                <input type="number" id="limit_placeholder" name="limit_placeholder"
+                                       value="{{srcLimit}}" style="width: 50px;"/>
+                            </span>
+                                {{/if}}
+                            {{/if}}
+                        </p>
+
+                        {{#each srcServices}}
+                            <div id="{{id}}" style="position: relative;">
+                                <form id="copyform{{id}}" class="form" action="copyapi" method="POST"
+                                      enctype="application/x-www-form-urlencoded">
+                                    <table>
+                                        <tr>
+                                            <td nowrap="nowrap" width="1%">API Name:</td>
+                                            <td width="100%">{{name}}</td>
+                                        </tr>
+                                        {{#if version}}
+                                            <tr>
+                                                <td nowrap="nowrap" width="1%">Version:</td>
+                                                <td width="100%">{{version}}</td>
+                                            </tr>
+                                        {{/if}}
+                                        {{#if description}}
+                                            <tr>
+                                                <td nowrap="nowrap" width="1%">Description:</td>
+                                                <td width="100%" class="md">{{description}}</td>
+                                            </tr>
+                                        {{/if}}
+                                    </table>
+                                    <input type="submit"
+                                           class="btn btn-warning"
+                                           id="copy{{id}}"
+                                           name="copy"
+                                           value="Copy &raquo;"
+                                           style="position:absolute;right:0;top:0;"/>
+                                    <input type="hidden" id="copyapi{{id}}" name="copyapi" value="{{id}}">
+                                    <input type="hidden" id="tgt_area{{id}}" name="tgt_area">
+                                    <input type="hidden" id="src_area{{id}}" name="src_area">
+                                    <script type="text/javascript">
+                                        <!--
+                                        $('#copyform{{id}}').submit(function (event) {
+                                            if ($('#src_uuid option:selected').text() === $('#tgt_uuid option:selected').text()) {
+                                                alert("Source and destination areas must be different");
+                                                event.preventDefault();
+                                            } else {
+                                                centerProc();
+                                                $('#processing').text("Copying {{name}} from " +
+                                                        $('#src_uuid option:selected').text() + " to " +
+                                                        $('#tgt_uuid option:selected').text());
+                                                $('#processing').css({'display': 'block'});
+                                                $('#tgt_area{{id}}').val($('#tgt_uuid option:selected').text() + "|" +
+                                                        $('#tgt_uuid').val());
+                                                $('#src_area{{id}}').val($('#src_uuid option:selected').text() + "|" +
+                                                        $('#src_uuid').val());
+                                                return;
+                                            }
+                                        });
+                                        //-->
+                                    </script>
+                                </form>
+
+                            </div>
+                        {{/each}}
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="form-group" id="dest">
+                <!--    <div id="dest" style="width: 49%; height: 100%; float: right;">-->
+                <h2 class="text-capitalize fs-2 text-success">Destination Area</h2>
+                <form id="listTgt" class="form" action="copyapi" method="POST"
+                      enctype="application/x-www-form-urlencoded">
+                    <input type="hidden" id="tgt_offset" name="tgt_offset" value="{{tgtOffset}}">
+                    <input type="hidden" id="tgt_limit" name="tgt_limit" value="{{tgtLimit}}"/>
+                    <div class="container overflow-visible">
+
+                        <div class="row mt-3">
+                            {{#if srcUuids}}
+                                <div class="col">
+                                    <label class="form-label fw-normal" for="tgt_uuid">Area Name</label>
+                                </div>
+                                <div class="col">
+                                    <select class="form-select" id="tgt_uuid" name="tgt_uuid">
+                                        {{#each srcUuids}}
+                                            {{#if (eq ../tgtUuid uuid)}}
+                                                <option value="{{uuid}}" selected="selected">{{name}}</option>
+                                            {{else}}
+                                                <option value="{{uuid}}">{{name}}</option>
+                                            {{/if}}
+                                        {{/each}}
+                                    </select>
+                                </div>
+                            {{else}}
+                                <div class="col">
+                                    <label class="form-label fw-normal" for="tgt_uuid">Area UUID</label>
+                                </div>
+                                <div class="col">
+                                    <input class="form-control" type="text" name="tgt_uuid" id="tgt_uuid"
+                                           value="{{srcUuid}}">
+                                </div>
+                            {{/if}}
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label class="form-label fw-normal" for="tgt_user">Mashery User</label>
+                            </div>
+                            <div class="col">
+                                <input class="form-control" type="text" name="_user" id="tgt_user" value="{{tgtUser}}">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label class="form-label fw-normal" for="tgt_pwd">Password</label>
+                            </div>
+                            <div class="col">
+                                <input class="form-control" type="password" name="tgt_pwd" id="tgt_pwd"
+                                       value="{{tgtPwd}}">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label class="form-label fw-normal" for="tgt_key">Platform API Key</label>
+                            </div>
+                            <div class="col">
+                                <input class="form-control" name="tgt_key" id="tgt_key"
+                                       value="{{tgtKey}}">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col">
+                                <label class="form-label fw-normal" for="tgt_secret">API Key Secret</label>
+                            </div>
+                            <div class="col">
+                                <input class="form-control"  name="tgt_secret" id="tgt_secret"
+                                       value="{{tgtSecret}}">
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <input type="submit"
+                                   name="load_tgt_services"
+                                   id="load_tgt_services"
+                                   value="Load Services"
+                                   class="btn btn-danger float-end"/>
+                        </div>
+                    </div>
+                </form>
+                {{#if tgtServices}}
+                    <div id="tgtServices" style="margin-top: 4em;">
+                        <p style="margin-bottom: 1em;">Showing {{tgtRange}} of {{totalCount}}
+                            {{#if (gt tgtRemain 0)}}
+                                {{#if (gt tgtOffset 0)}}
+                                    &nbsp;|&nbsp;<a id="tgt-list-prev" href="#">prev
+                                    {{#if (lte tgtLimit tgtOffset)}}
+                                        {{tgtLimit}}
+                                    {{else}}
+                                        {{tgtOffset}}
+                                    {{/if}}</a>
+                                {{/if}}
+                                {{#if (lt tgtServices.length totalCount)}}
+                                    &nbsp;|&nbsp;<a id="tgt-list-next" href="#">next
+                                    {{#if (lte tgtRemain tgtServices.length)}}
+                                        {{tgtRemain}}
+                                    {{else}}
+                                        {{tgtServices.length}}
+                                    {{/if}}</a>
+                                    <span style="margin-left: 1em; float: right;">&nbsp;&nbsp;Records per page:&nbsp;
+                                <input type="number" id="limit_placeholder" name="limit_placeholder"
+                                       value="{{tgtLimit}}" style="width: 50px;"/>
+                            </span>
+                                {{/if}}
+                            {{else}}
+                                {{#if (gt tgtOffset 0)}}
+                                    &nbsp;|&nbsp;<a id="tgt-list-prev" href="#">prev
+                                    {{#if (lte tgtLimit tgtOffset)}}
+                                        {{tgtLimit}}
+                                    {{else}}
+                                        {{tgtOffset}}
+                                    {{/if}}</a>
+                                    <span style="margin-left: 1em; float: right;">&nbsp;&nbsp;Records per page:&nbsp;
+                                <input type="number" id="limit_placeholder" name="limit_placeholder"
+                                       value="{{tgtLimit}}" style="width: 50px;"/>
+                            </span>
+                                {{/if}}
+                            {{/if}}
+                        </p>
+                        {{#each tgtServices}}
+                            <div id="{{id}}" style="position: relative;">
+                                <table>
+                                    <tr>
+                                        <td nowrap="nowrap" width="1%">API Name:</td>
+                                        <td width="100%">{{name}}</td>
+                                    </tr>
+                                    {{#if version}}
+                                        <tr>
+                                            <td nowrap="nowrap" width="1%">Version:</td>
+                                            <td width="100%">{{version}}</td>
+                                        </tr>
+                                    {{/if}}
+                                    {{#if description}}
+                                        <tr>
+                                            <td nowrap="nowrap" width="1%">Description:</td>
+                                            <td width="100%" class="md">{{description}}</td>
+                                        </tr>
+                                    {{/if}}
+                                </table>
+                            </div>
+                        {{/each}}
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+<div id="processing" class="message loading" style="display: none; width: 400px; text-align: left;">Copying...</div>
+{{#if tgtApi}}
+    <p style="margin-top: 1em;">Successfully copied {{#if ccUrl}}
+        <a href="{{ccUrl}}/api-definitions/{{apiId}}">{{tgtApi}}</a>{{else}} {{tgtApi}} {{/if}}{{#if tgtArea}}
+        to {{tgtArea}}{{/if}}</p>
+{{/if}}
+{{#if error}}
+    <div id="error" class="errors">{{{error}}}</div>
+{{/if}}
+{{#if warn}}
+    <div id="warn" class="message">{{warn}}</div>
+{{/if}}
+<script src="javascripts/Markdown.Converter.js"></script>
+<script src="javascripts/Markdown.Sanitizer.js"></script>
+<script type="text/javascript">
+    <!--
+    $(function () {
+        $(document).ready(function () {
+            var convert = new Markdown.getSanitizingConverter().makeHtml;
+            $('.md').each(function () {
+                var content = $(this).html();
+                var replace = convert(content);
+                $(this).html(replace);
+            });
+
+            $('#src-list-next').click(function () {
+                var offset = parseInt($('#src_offset').val());
+                var limit = parseInt($('#limit_placeholder').val());
+                var remain = parseInt("{{srcRemain}}");
+                var set = parseInt("{{srcServices.length}}");
+                if (remain <= limit) {
+                    offset += limit;
+                } else {
+                    offset += set;
+                }
+                $('#src_offset').val(offset).change();
+                if (limit !== parseInt("{{srcServices.length}}")) {
+                    $('#src_limit').val(limit).change();
+                }
+                $('#listSrc').submit();
+            });
+            $('#src-list-prev').click(function () {
+                var offset = parseInt($('#src_offset').val());
+                var limit = parseInt($('#limit_placeholder').val());
+                offset -= limit;
+                if (offset < 0) offset = 0;
+                $('#src_offset').val(offset).change();
+                var limit = parseInt($('#limit_placeholder').val());
+                if (limit !== parseInt("{{srcServices.length}}")) {
+                    $('#src_limit').val(limit).change();
+                }
+                $('#listSrc').submit();
+            });
+            $('#tgt-list-next').click(function () {
+                var offset = parseInt($('#tgt_offset').val());
+                var limit = parseInt($('#limit_placeholder').val());
+                var remain = parseInt("{{tgtRemain}}");
+                var set = parseInt("{{tgtServices.length}}");
+                if (remain <= limit) {
+                    offset += limit;
+                } else {
+                    offset += set;
+                }
+                $('#tgt_offset').val(offset).change();
+                if (limit !== parseInt("{{tgtServices.length}}")) {
+                    $('#tgt_limit').val(limit).change();
+                }
+                $('#listTgt').submit();
+            });
+            $('#tgt-list-prev').click(function () {
+                var offset = parseInt($('#tgt_offset').val());
+                var limit = parseInt($('#limit_placeholder').val());
+                offset -= limit;
+                if (offset < 0) offset = 0;
+                $('#tgt_offset').val(offset).change();
+                var limit = parseInt($('#limit_placeholder').val());
+                if (limit !== parseInt("{{tgtServices.length}}")) {
+                    $('#tgt_limit').val(limit).change();
+                }
+                $('#listTgt').submit();
+            });
+        });
+    });
+    $(window).resize(function () {
+        centerProc();
+    });
+
+    function centerProc() {
+        var width = ($(window).width() - $('#processing').width()) / 2;
+        var height = ($(window).height() - $('#procesing').height()) / 2;
+
+        $('#processing').css({
+            'position': 'absolute',
+            'left': width + 'px',
+            'top': height + 'px',
+            'padding': '2em'
+        });
+    }
+
+    //-->
+</script>
